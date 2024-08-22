@@ -73,7 +73,10 @@ class Input extends AbstractFilter
                 $conditionType = $filterConfig['conditionType'] ?? null;
                 $valueExpression = $filterConfig['valueExpression'] ?? null;
             }
-            if ($conditionType === self::CONDITION_LIKE) {
+            if ($conditionType === self::CONDITION_LIKE && $this->getContext()->getNamespace() === 'customer_listing') {
+                $value = str_replace(['%', '_'], ['\%', '\_'], $value);
+                $valueExpression = '%s%%';
+            } elseif ($conditionType === self::CONDITION_LIKE) {
                 $value = str_replace(['%', '_'], ['\%', '\_'], $value);
                 $valueExpression = $valueExpression ?? '%%%s%%';
             }
