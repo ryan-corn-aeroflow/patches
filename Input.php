@@ -19,6 +19,8 @@ class Input extends AbstractFilter
 
     private const CONDITION_LIKE = 'like';
 
+    private const LIKE_WILDCARD_CHANGE = ['email', 'patient_id', 'parent_patient_id']
+
     /**
      * @var ElementInput
      */
@@ -73,7 +75,13 @@ class Input extends AbstractFilter
                 $conditionType = $filterConfig['conditionType'] ?? null;
                 $valueExpression = $filterConfig['valueExpression'] ?? null;
             }
-            if ($conditionType === self::CONDITION_LIKE) {
+            if ($conditionType === self::CONDITION_LIKE 
+            && $this->getContext()->getNamespace() === 'customer_listing'
+            && in_array($this->getName(), self::LIKE_WILDCARD_CHANGE)
+            ) {
+                $value = str_replace(['%', '_'], ['\%', '\_'], $value);
+                $valueExpression = '%s%%';
+            } elseif ($conditionType === self::CONDITION_LIKE) {
                 $value = str_replace(['%', '_'], ['\%', '\_'], $value);
                 $valueExpression = $valueExpression ?? '%%%s%%';
             }
